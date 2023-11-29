@@ -2,6 +2,7 @@ import random
 print('')
 
 def single_turn_sim(hold_value, print_rolls):
+#Simulate a single turn where we continue rolling until hold_value or until we roll 1.
     turn_total = 0
     while True:
         roll_value = random.randrange(1, 7)
@@ -23,7 +24,8 @@ def single_turn_sim(hold_value, print_rolls):
             break
     return turn_total
 
-def scores_probs_per_game(hold_value, turns_to_simulate): #Part 2 and 3
+def scores_probs_per_game(hold_value, turns_to_simulate):
+#Create a table that shows the probability of each score.
     sim_turns = []
     scores_prob = {}
     for score in range(turns_to_simulate):
@@ -40,7 +42,8 @@ def scores_probs_per_game(hold_value, turns_to_simulate): #Part 2 and 3
             print(f"{score} {' ' * (7- len(str(score)))} {scores_prob.get(score)}")
     return sorted_chart, sim_turns
 
-def avg_turns_per_game(): #Part 6
+def avg_turns_per_game():
+#Return the average number of turns in a solitaire game.
     num_games = int(input('How many games to simulate? '))
     hold_game_score = int(input('At what total score do you want to stop each game? '))
     avg_value = 0
@@ -62,6 +65,7 @@ def avg_turns_per_game(): #Part 6
     return avg_value
 
 def player_vs_player_game_sim():
+#Simulate a game between 2 players.
     sim_scores = []
     p1_turn_score = 0
     p2_turn_score = 0
@@ -69,8 +73,7 @@ def player_vs_player_game_sim():
     print("Player 1 score: 0")
     print("Player 2 score: 0")
     print("It is player 1's turn.")
-    while True: #for sim in range(num_turns):
-        #sim_scores += [turn] ###
+    while True: 
         turn = single_turn_sim(20, True)
 
         if p1_turn == True:
@@ -83,7 +86,7 @@ def player_vs_player_game_sim():
                 print("It is player 2's turn.")
             p1_turn = False 
 
-        elif p1_turn == False: #check for even number, player 2's turn
+        elif p1_turn == False:
             p2_turn_score += turn
             print(f'Turn total: {turn}')
             print('')
@@ -93,11 +96,12 @@ def player_vs_player_game_sim():
                 print("It is player 1's turn.")
             p1_turn = True
 
-        if p1_turn_score >= 100 or p2_turn_score >= 100: #or turn >= 20 or turn == 0: ###
+        if p1_turn_score >= 100 or p2_turn_score >= 100:
             break
     return p1_turn_score, p2_turn_score, sim_scores
 
-def player_vs_computer_game(): #Part 8 (most important)
+def player_vs_computer_game():
+#An actual 2 player pig game between a real player and the computer.
     human_total_score = 0
     computer_total_score = 0
     human_player_turn = random.choice([True, False])
@@ -107,11 +111,11 @@ def player_vs_computer_game(): #Part 8 (most important)
     print(f"Computer score: {computer_total_score}")
     print('')
 
-    while True: #run the entire game until someone reaches a total score of 100
-        if human_player_turn == True: #code for the human player
+    while True: 
+        if human_player_turn == True:
             human_turn_score = 0
             roll_or_hold = str(input("It is the player's turn "))
-            while True: #runs until we roll a 1, the turn score is 20, or we have a total score of 100.
+            while True:
                roll_value = random.randrange(1, 7)
                print(f'Roll: {roll_value}')
 
@@ -122,7 +126,7 @@ def player_vs_computer_game(): #Part 8 (most important)
                elif roll_value == 1:
                     human_turn_score = 0
 
-               if human_turn_score >= 20 or roll_value == 1 or len(roll_or_hold) > 0: #stops the turn when we roll 1, we get a turn score of >= 20, or we enter a non-zero input
+               if human_turn_score >= 20 or roll_value == 1 or len(roll_or_hold) > 0:
                         human_total_score += human_turn_score
                         print(f'New Score: {human_total_score}')
                         print('')
