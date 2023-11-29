@@ -1,0 +1,150 @@
+import random
+print('')
+
+def single_turn_sim(hold_value, print_rolls):
+    turn_total = 0
+    while True:
+        roll_value = random.randrange(1, 7)
+        if print_rolls == True:
+            print(f'Roll: {roll_value}')
+        
+        if roll_value == 1:
+            turn_total = 0
+            if print_rolls == True:
+                print(f'Turn total: {turn_total}')
+            break
+
+        elif roll_value in range(2, 7):
+            turn_total += roll_value
+
+        if turn_total >= hold_value :
+            if print_rolls == True:
+                print(f'Turn total: {turn_total}')
+            break
+    return turn_total
+
+def scores_probs_per_game(hold_value, turns_to_simulate): #Part 2 and 3
+    sim_turns = []
+    scores_prob = {}
+    for score in range(turns_to_simulate):
+        sim_turns += [single_turn_sim(hold_value, print_rolls=False)]
+
+    for item in sim_turns:
+        if item not in scores_prob:
+            scores_prob[item] = sim_turns.count(item) / turns_to_simulate
+
+    sorted_chart = sorted(scores_prob.keys(), key = lambda k: scores_prob[k], reverse = True)
+
+    print('Score    Estimated Probability')
+    for score in sorted_chart:
+            print(f"{score} {' ' * (7- len(str(score)))} {scores_prob.get(score)}")
+    return sorted_chart, sim_turns
+
+def avg_turns_per_game(): #Part 6
+    num_games = int(input('How many games to simulate? '))
+    hold_game_score = int(input('At what total score do you want to stop each game? '))
+    avg_value = 0
+    game_score = 0
+    turns_per_game = 0
+    turns_per_game_list = []
+    for simulation in range(num_games):
+        game_score += single_turn_sim(20, False)
+        turns_per_game += 1
+        if game_score >= hold_game_score:
+            turns_per_game_list += [turns_per_game]
+            game_score = 0
+            turns_per_game = 0
+
+    for turns in turns_per_game_list:
+        avg_value += turns
+    avg_value = avg_value / len(turns_per_game_list)
+    print(f'Average turns: {avg_value}')
+    return avg_value
+
+def player_vs_player_game_sim():
+    sim_scores = []
+    p1_turn_score = 0
+    p2_turn_score = 0
+    p1_turn = True
+    print("Player 1 score: 0")
+    print("Player 2 score: 0")
+    print("It is player 1's turn.")
+    while True: #for sim in range(num_turns):
+        #sim_scores += [turn] ###
+        turn = single_turn_sim(20, True)
+
+        if p1_turn == True:
+            p1_turn_score += turn
+            print(f'Turn total: {turn}')
+            print('')
+            print(f'Player 1 score: {p1_turn_score}')
+            print(f'Player 2 score: {p2_turn_score}')
+            if p1_turn_score <= 100 and p2_turn_score <= 100:
+                print("It is player 2's turn.")
+            p1_turn = False 
+
+        elif p1_turn == False: #check for even number, player 2's turn
+            p2_turn_score += turn
+            print(f'Turn total: {turn}')
+            print('')
+            print(f'Player 1 score: {p1_turn_score}')
+            print(f'Player 2 score: {p2_turn_score}')
+            if p1_turn_score <= 100 and p2_turn_score <= 100:
+                print("It is player 1's turn.")
+            p1_turn = True
+
+        if p1_turn_score >= 100 or p2_turn_score >= 100: #or turn >= 20 or turn == 0: ###
+            break
+    return p1_turn_score, p2_turn_score, sim_scores
+
+def player_vs_computer_game(): #Part 8 (most important)
+    human_total_score = 0
+    computer_total_score = 0
+    human_player_turn = random.choice([True, False])
+
+    print("Press enter to roll or any other key to hold.")
+    print(f"Player score: {human_total_score}")
+    print(f"Computer score: {computer_total_score}")
+    print('')
+
+    while True: #run the entire game until someone reaches a total score of 100
+        if human_player_turn == True: #code for the human player
+            human_turn_score = 0
+            roll_or_hold = str(input("It is the player's turn "))
+            while True: #runs until we roll a 1, the turn score is 20, or we have a total score of 100.
+               roll_value = random.randrange(1, 7)
+               print(f'Roll: {roll_value}')
+
+               if roll_value in range(2, 7) and human_turn_score <= 20:
+                    human_turn_score += roll_value
+
+                    roll_or_hold = str(input(f'Turn total: {human_turn_score} Roll/Hold? '))
+               elif roll_value == 1:
+                    human_turn_score = 0
+
+               if human_turn_score >= 20 or roll_value == 1 or len(roll_or_hold) > 0: #stops the turn when we roll 1, we get a turn score of >= 20, or we enter a non-zero input
+                        human_total_score += human_turn_score
+                        print(f'New Score: {human_total_score}')
+                        print('')
+                        print(f'Player score: {human_total_score}')
+                        print(f'Computer score: {computer_total_score}')          
+                        human_player_turn = False
+                        break
+
+        elif human_player_turn == False: #code for the computer player 
+            print("It is the computer's turn")
+            computer_turn_score = single_turn_sim(20, print_rolls=True)
+            computer_total_score += computer_turn_score
+            print(f'New Score: {computer_total_score}')
+            print('')
+            print(f'Player score: {human_total_score}')
+            print(f'Computer score: {computer_total_score}')
+            human_player_turn = True
+            
+
+        if human_total_score >= 100 or computer_total_score >= 100:
+            break
+    return human_total_score, computer_total_score
+
+player_vs_computer_game()
+print('')
